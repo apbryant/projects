@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+		<script src="https://d3js.org/d3.v5.min.js"></script>
+		<style>
+		#description{
+			font-size:12px;
+			font-weight:normal;
+		}
+			
+			#hhSizeLabel{
+				position:absolute;
+				top:500px;
+				left:900px;
+				transform:rotate(90deg);
+			}
+			#hhSizeLine{
+				fill:none;
+				stroke:green;
+			}
+			p{
+				font-family:Arial;
+				font-size:14px;
+				font-weight:bold;
+			}
+			#sqFootageLabel{				
+				position:absolute;
+				top:500px;
+				transform:rotate(-90deg);
+			}
+			
+			#sqFootageLine{
+				fill:none;
+				stroke:blue;
+			}
+						
+			svg{
+				position:absolute;
+				top:100px;
+				left:100px;
+			}
+			#yearLabel{
+				position:absolute;
+				top:750px;
+				left:550px;
+			}
+			
+		</style>
+    </head>
+    <body>
+		<p>Average house square footage and average household size in the United States, 1973 - 2014</p>
+		<p id="yearLabel">Year</p>
+		<p id="sqFootageLabel">Average square footage</p>
+		<p id="hhSizeLabel">Average household size</p>
+		<p id="description">I think this is an interesting trend in American society.
+		Even though family sizes are getting smaller, houses have been getting larger. It's
+		a sign of the prosperity of the country in today's age (Look! I can buy a huge house!). However,
+		the minimalist in me is cringing at the inefficiency of it all, because people no only buy all that extra house, pay taxes and insurance on it,
+		heat it and cool it, clean it (or pay someone to do so), and buy stuff to fill it.
+		</p>
+        <script type="text/javascript">
+            d3.csv("hh_data.csv").then(function(data){
+				var parseTime = d3.timeParse("%Y")
+				for(i = 0; i < data.length;i++){
+					data[i].year = parseTime(data[i].year);
+					data[i].size = +data[i].size;
+					data[i].people = +data[i].people;
+				};
+				
+				console.log(data);
+				var h = 600;
+				var w = 800;
+				var padding = 30;
+				var xScale = d3.scaleTime()
+					.domain([d3.min(data, function(d){ return d.year; }), d3.max(data, function(d){ return d.year; })])
+					.range([0, w]);
+				
+				var sqFootageScale = d3.scaleLinear()
+					.domain([0, d3.max(data, function(d){ return d.size; })])
+					.range([h, 0]);
+				var hhSizeScale = d3.scaleLinear()
+					.domain([0, d3.max(data, function(d){ return d.people; })])
+					.range([h, 0]);
+					
+				var xAxis = d3.axisBottom().scale(xScale);
+				var sqFootageAxis = d3.axisLeft().scale(sqFootageScale);
+				var hhsizeAxis  = d3.axisLeft().scale(hhSizeScale);
+				
+				var sqFootageLine = d3.line()
+					.x(function(d){ return xScale(d.year); })
+					.y(function(d){ return sqFootageScale(d.size); });
+					
+				var hhSizeLine = d3.line()
+					.x(function(d){ return xScale(d.year); })
+					.y(function(d){ return hhSizeScale(d.people); });
+					
+				var svg = d3.select('body')
+					.append('svg')
+					.attr('width', w)
+					.attr('height', h);
+					
+				svg.append('path')
+					.datum(data)
+					.attr('class', 'line')
+					.attr('id', 'sqFootageLine')
+					.attr('transform', 'translate (' + (padding + 20) + ',0)')
+					.attr('d', sqFootageLine);
+					
+				svg.append('path')
+					.datum(data)
+					.attr('class', 'line')
+					.attr('id', 'hhSizeLine')
+					.attr('transform', 'translate (' + (padding + 20) + ',0)')
+					.attr('d', hhSizeLine);
+					
+					
+				svg.append('g')
+					.attr('class', 'axis')
+					.attr('transform', 'translate (' + (padding + 20) + ',' + (h - (padding - 10)) + ')')
+					.call(xAxis);
+					
+				svg.append('g')
+					.attr('class', 'axis')
+					.attr('transform', 'translate (' + (padding + 20) + ',' + (-5) + ')')
+					.call(sqFootageAxis);
+					
+				svg.append('g')
+					.attr('class', 'axis')
+					.attr('transform', 'translate (' + (w - 1) + ',' + (-5) + ')')
+					.call(hhsizeAxis);
+			});
+        </script>
+    </body>
+</html>

@@ -1,0 +1,80 @@
+---
+title: "happiness"
+author: "Andrew Bryant"
+date: "2/7/2017"
+output: html_document
+---
+## Data
+
+I downloaded the original datasets on happiness from kaggle.com.
+I used three datasets, one from 2015, 2016, and 2017.
+I wrangled the data in Python in order to remove countries
+that were not present in all three datasets.
+
+The three datasets have 146 observations and 12 variables. 
+The variables measure the countries' happiness scores and ranks
+relative to other countries, as well as indicators that may correlate with
+happiness, such as income and life expectancy.
+
+```{load data}
+h2015 <- read.csv('h2015.csv')
+h2016 <- read.csv('h2016.csv')
+h2017 <- read.csv('h2017.csv')
+```
+
+## R wrangling
+
+I wanted to create a dataset of the countries and happiness scores for all
+three years. I first ordered the datasets by country.
+
+```{order by country}
+h2015 <- h2015[order(h2015$Country), ]
+h2016 <- h2016[order(h2016$Country), ]
+h2017 <- h2017[order(h2017$Country), ]
+```
+
+I then took out the happiness scores and created a new dataframe with them.
+
+```{score data frame}
+score2015 <- h2015$Happiness.Score
+score2016 <- h2016$Happiness.Score
+score2017 <- h2017$Happiness.Score
+scores <- data.frame(score2015, score2016, score2017)
+```
+
+I wanted to know which countries experienced the largest
+changes in happiness over the time period. I created a new variable called netScoreDiff to measure this. I also added the country names to the new dataset.
+
+```{net_change}
+scores$net_change <- scores$score2017 - scores$score2015
+countries <- h2015$Country
+scores$Country <- countries
+```
+
+## netScoreDiff Summary Stats
+
+Countries experienced no meaningful change in happiness in the dataset's time period. 
+
+```{net_change mean and median}
+mean(scores$net_change)
+median(scores$net_change)
+```
+
+
+
+```{max and min net_change}
+scores[scores$net_change == max(scores$net_change), ]
+scores[scores$net_change == min(scores$net_change), ]
+```
+
+
+
+Below is a boxplot of the data.
+```{net_change boxplot, include=FALSE}
+ggplot(scores, aes('', scores$net_change)) + geom_boxplot()
+```
+
+Write scores to a CSV for use in other platforms.
+```{writecsv, include=FALSE}
+write.csv(scores, file = "scores.csv")
+```

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Two Chiles</title>
+        <script src="https://d3js.org/d3.v5.min.js"></script>
+    </head>
+    <body>
+        <script type="text/javascript">
+            // Your beautiful D3 code will go here
+			var h = 1000;
+			var w = 1000;
+			var projection = d3.geoMercator().translate([w / 2, -20])
+				.scale(300);
+				
+			var projection2 = d3.geoMercator().translate([w * .5  , h *.5 ])
+				.scale(300).rotate([0, 0, 180]);
+				
+			var path2 = d3.geoPath()
+				.projection(projection2);
+				
+			var path = d3.geoPath()
+				.projection(projection);
+				
+			var svg = d3.select('body')
+				.append('svg')
+				.attr('height', h)
+				.attr('width', w);
+			var gMap = svg.append('g').attr('id', 'map');
+			var gPoint = svg.append('g');
+	
+			// data from: https://geojson-maps.ash.ms/
+			d3.json('chile.json').then(function(data){
+				gMap.selectAll('path')
+					.data(data.features)
+					.enter()
+					.append('path')
+					.attr('d', path)
+					.attr('fill', '#E8D7F1')
+					.attr('stroke', '#D3BCCC');
+			});
+			
+			// data from: https://bit.ly/2NOo4H9
+			d3.json('chile_regions.json').then(function(data){
+				gMap.selectAll('path')
+					.data(data.features)
+					.enter()
+					.append('path')
+					.attr('d', path2)
+					.attr('fill', '#E8D7F1')
+					.attr('stroke', '#D3BCCC');
+			});
+        </script>
+    </body>
+</html>

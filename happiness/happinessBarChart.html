@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <script src='http://d3js.org/d3.v3.min.js'></script>
+  <script src='http://dimplejs.org/dist/dimple.v2.0.0.min.js'></script>
+  <style>  
+    
+    h2 {
+      text-align: center;
+    }
+
+  </style>
+  <script type='text/javascript'>
+  	
+    function draw(data) {
+  		// margin setup
+  		'use strict';
+      var margin = 25,
+      width = 1400 - margin,
+      height = 700 - margin;
+
+      // title
+      d3.select('body')
+      .append('h2')
+      .text('Net change in country happiness between 2015 and 2017');
+
+      // svg setup
+      var svg = d3.select('body')
+        .append('svg')
+        .attr('width', width + margin)
+        .attr('height', height + margin)
+        .append('g')
+        .attr('class', 'chart');
+
+      // chart construction
+      var myChart = new dimple.chart(svg, data);
+      var x = myChart.addCategoryAxis('x', 'Country');
+      var y = myChart.addMeasureAxis('y', 'net_change');
+      var series = myChart.addSeries(['Country', 'net_change'], dimple.plot.bar);
+      /* 
+      tooltip customization code adapted from: http://bit.ly/2txfgZN
+      via http://bit.ly/2swJ5rR
+      */
+      series.getTooltipText = function(d){
+        return [
+          'Country: ' + d.aggField[0],
+          'Net change in happiness: ' + d.aggField[1]
+        ]};
+      myChart.draw()
+      d3.selectAll('.dimple-series-0')
+        .attr('fill', '#81BEF7')
+        .attr('stroke', '#81BEF7')
+        .attr('fill-opacity', 0.8);
+      d3.selectAll('.tick')
+        .selectAll('text')
+        .style('font-size', '8px');
+      };
+
+  </script>
+</head>
+<body>
+	<script type='text/javascript'>
+	
+  // load data
+	d3.csv('scores.csv', function(d) {
+    d['net_change'] = +d['net_change'];
+		return d;
+	}, draw);
+
+	</script>
+</body>
+</html>

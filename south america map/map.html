@@ -1,0 +1,33 @@
+<html>
+	<head>
+	<style>
+	</style>
+		<script src="https://d3js.org/d3.v5.min.js"></script>
+		<script type="text/javascript">
+			function draw(data){
+				console.log(data);
+				var svg = d3.select("body")
+					.append("svg")
+					.attr("width", 2000)
+					.attr("height", 2000)
+					.append('g')
+					.attr('class', 'map');
+				var projection = d3.geoEquirectangular().scale(200);
+				var path = d3.geoPath().projection(projection);
+				var map = svg.selectAll('path')
+					.data(data.features)
+					.enter()
+					.append('path')
+					.attr('d', path)
+					.attr('id', function(d){
+						return d.properties.name;
+					});
+			}
+		</script>
+	</head>
+	<body>
+		<script type="text/javascript">
+			d3.json('south_america.json').then(draw);
+		</script>		
+	</body>
+</html>

@@ -1,0 +1,247 @@
+---
+---
+title: "Exploratory Data Analysis of Mobile Payment Fraud"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# About the data
+
+This dataset contains data of simulated mobile money transactions in an African country.
+The dataset was downloaded the datasets from kaggle.com. 
+The dataset was found tidy,
+so no cleaning was necessary before undergoing the analysis.
+
+# Initial questions
+
+In this project, I will conduct exploratory analysis of the dataset to find
+interesting insights and trends that would warrant more in-depth investigation.
+
+Initital questions that I have of the data that will guide me are: 
+
+When/where does fraud occur?
+What types of transactions does fraud occur?
+Are there any variables that are correlated to fraud?
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
+library(ggplot2)
+library(gridExtra)
+```
+
+```{r echo=FALSE, Load_the_Data}
+# Load the Data
+setwd("~/Documents/R")
+payments <- read.csv('mobilePayments.csv')
+```
+
+## Adding variable 'days'
+
+```{r echo=FALSE, days}
+payments$days <- (payments$step) / 24
+```
+
+The step variable measures each hour in a 30 day period.
+Dividing this variable by 24 will make it easier to see the days in which transactions happen.
+
+# Overview
+
+```{r echo=FALSE, overview}
+str(payments)
+```
+
+The dataset has 6362620 observations and 12 variables. The
+variable types are integers, numbers, and factors.
+
+# Investigation
+
+## Number of fraudulent cases
+
+```{r echo=FALSE, fraud_rate}
+length(payments$isFraud[payments$isFraud == 1])
+mean(payments$isFraud)
+mean(payments$isFlaggedFraud)
+```
+
+Fraudulent transactions are marked with a "1" in the dataset. There are 8213 
+of these transactions in the dataset, giving it a 'fraud rate' of 0.13%.
+There is another variable, isFlaggedFraud, which represents
+whether a transaction was seen by the company as possibly fraudulent
+as it was being made. The flagged transactions are marked
+with a "1" as well. All flagged transactions were fraudulent. 
+Only sixteen transactions are flagged. 
+This means that most of the fraudulent transactions get through the system. 
+
+## Averages
+
+```{r echo=FALSE, mean_values}
+# Mean of all transactions
+mean(payments$amount)
+# Splitting fradulent, flagged, and non-fraudulent transactions
+fraud <- payments[payments$isFraud == 1, ]
+noFraud <- payments[payments$isFraud == 0, ]
+isFlaggedFraud <- payments[payments$isFlaggedFraud == 1, ]
+# Mean of fraudulent and non-fraudulent transactions
+mean(fraud$amount)
+mean(noFraud$amount)
+mean(isFlaggedFraud$amount)
+# Size difference between fraudulent and non-fraudulent transactions
+mean(fraud$amount) / mean(noFraud$amount)
+# Size difference between non-flagged and flagged fraudulent transactions
+mean(isFlaggedFraud$amount) / mean(fraud$amount)
+```
+
+Transactions that are fraudulent are more than
+eight times larger than legitimate ones, 
+but since there are so many more legitimate transactions,
+the difference in size barely changes the overall average.
+
+The fraudulent transactions that were flagged are three times larger than the 
+ones that weren't. 
+This could be because the system flags large transactions in 
+excess of 200,000 of the local currency.
+Smaller transactions that are still fraudulent are not flagged.
+
+## Average boxplot and histograms
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, amountPlots}
+
+# Boxplot of transactions
+ggplot(payments, aes('', amount)) + 
+  geom_boxplot()
+
+# Histogram of transactions
+ggplot(payments, aes(amount)) + 
+  geom_histogram(bins = 100) + 
+  xlim(0, 2000000)
+
+```
+
+The data are heavily skewed to the right, with many outliers representing
+large transactions.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, fraudPlots}
+
+# Boxplot
+ggplot(fraud, aes('', amount)) + geom_boxplot()
+
+# Histogram
+ggplot(fraud, aes(amount)) + geom_histogram(bins = 100)
+
+
+```
+
+Compared with the whole dataset, the distribution
+of the fraudulent transactions is similar, but
+there is a spike in the number of transactions around the one million amount.
+
+## Top fraudsters
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, topFraudsters}
+# Adding the fraudulent transaction amounts by destination account
+group <- aggregate(fraud$amount, by = list(fraud$nameDest), FUN = sum)
+# Ordering the group dataframe by transaction amount
+group.ordered <- group[order(group$x, decreasing = TRUE), ]
+# Top 10
+head(group.ordered, 10)
+```
+
+One intrepid individual made fraudulent transactions of
+over 10 million of the local currency.
+
+## Looking at an invididual fraudster
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, individual}
+
+payments[payments$nameDest == 'C668046170', ]
+
+```
+
+There are five transactions and
+three different types of transactions done by this person.
+The transactions are distributed throughout the month.
+Two of the transactions are fraudulent, and none were flagged as fraudulent.
+
+## Which transaction types have the most fraud
+
+### Transfers
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, transfers}
+
+# Transfers
+nrow(fraud[fraud$type == 'TRANSFER', ])
+```
+
+### Payments
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, payments}
+nrow(fraud[fraud$type == 'PAYMENT', ])
+```
+
+### Debits
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, debits}
+nrow(fraud[fraud$type == 'DEBIT', ])
+```
+
+### Cash in
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, cashIn}
+nrow(fraud[fraud$type == 'CASH_IN', ])
+```
+
+### Cash out
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, cashOut}
+nrow(fraud[fraud$type == 'CASH_OUT', ])
+```
+
+Transfers and cashouts have an almost equal number of fraudulent transactions. 
+This makes sense, because the dataset documentation says that a common fraud
+scheme used is to steal money by transferring it to another account
+and then cashing out.
+
+## Dates of transactions
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, dates}
+
+# Histogram of dates
+
+ggplot(payments, aes(days)) +
+  geom_histogram()
+```
+
+
+Around day two there is the mode of the graph,
+and around day 17 there is a sharp decline in the number of transactions.
+A hypothesis about why this pattern occurs is because
+people receive their wages at the beginning of the month
+and are thus more able to pay for things.
+At the end of the month they don't buy as much
+because they don't have as much money.
+
+The fraudulent transactions are more normally distributed. 
+
+Put together, this means that a greater percentage of transactions 
+later in the month are fraudulent than in the beginning of the month.
+
+# Discussion
+
+Interesting findings so far are:
+the difference in distributions of days
+on which the fraudulent transactions happen,
+and that the fraudulent transactions in this dataset
+are larger than legitimate ones.
+It is a good sign that so
+few transactions are fraudulent, 
+but also worrying that so few fraudulent
+transactions were flagged, which could suggest inadequate detection practices.
+
+To improve detection of fraud,
+it could be useful to place greater scrutiny
+on transactions on large transactions,
+transactions that happen later in the month,
+as well as to more closely monitor or block accounts that have been flagged,
+so that they do not make multiple transactions.
