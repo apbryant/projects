@@ -1,0 +1,11 @@
+C:\lords_prayer_levenshtein\LordsPrayer\LordsPrayer\bin\Debug\LordsPrayer.exe.config
+C:\lords_prayer_levenshtein\LordsPrayer\LordsPrayer\bin\Debug\LordsPrayer.exe
+C:\lords_prayer_levenshtein\LordsPrayer\LordsPrayer\bin\Debug\LordsPrayer.pdb
+C:\lords_prayer_levenshtein\LordsPrayer\LordsPrayer\bin\Debug\ICSharpCode.SharpZipLib.dll
+C:\lords_prayer_levenshtein\LordsPrayer\LordsPrayer\bin\Debug\NPOI.dll
+C:\lords_prayer_levenshtein\LordsPrayer\LordsPrayer\bin\Debug\NPOI.OOXML.dll
+C:\lords_prayer_levenshtein\LordsPrayer\LordsPrayer\bin\Debug\NPOI.OpenXml4Net.dll
+C:\lords_prayer_levenshtein\LordsPrayer\LordsPrayer\bin\Debug\NPOI.OpenXmlFormats.dll
+C:\lords_prayer_levenshtein\LordsPrayer\LordsPrayer\obj\Debug\LordsPrayer.csprojResolveAssemblyReference.cache
+C:\lords_prayer_levenshtein\LordsPrayer\LordsPrayer\obj\Debug\LordsPrayer.exe
+C:\lords_prayer_levenshtein\LordsPrayer\LordsPrayer\obj\Debug\LordsPrayer.pdb
