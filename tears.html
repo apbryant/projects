@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title></title>
+        <!-- <script type="text/javascript" src="../d3.js"></script> -->
+		<script src="https://d3js.org/d3.v5.min.js"></script>
+    </head>
+    <body>
+        <script type="text/javascript">
+			var w = 1000;
+			var h = 1000;
+			var padding = 50;
+			
+			var svg = d3.select("body")
+				.append('svg')
+				.attr('width', w)
+				.attr('height', h);
+				
+			// teardrop path code from web-tiki's answer
+			// to stackoverflow question: https://bit.ly/2AlYAti 
+			var d = "M15 3 Q16.5 6.8 25 18 A12.8 12.8 0 1 1 5 18 Q13.5 6.8 15 3z";
+			
+			// code snipped from MDN: https://mzl.la/1uDCHOb
+			var getRandomInt = function(min, max) {
+			  min = Math.ceil(min);
+			  max = Math.floor(max);
+			  return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+			}
+			
+			var counter = 0;
+			var moveTearDrop = function() {				
+				var max = w - padding;
+				var min = 0 + padding;
+				var tearX = getRandomInt(min, max);
+				var name = "tear" + counter;
+				var moveTearDown = 900;
+				counter++;
+				
+				svg.append('path')
+					.attr('id', name)
+					.attr('d', d)
+					.attr('transform', 'translate(' + tearX + ', 0)');
+				
+				d3.select('#' + name)
+					.transition()
+					.duration(1000)
+					.attr('transform', 'translate(' + tearX + ',' + moveTearDown + ')')
+					.remove();
+			};
+									
+			var startInterval = function(){
+				setInterval(moveTearDrop, 100);
+			};
+			
+			startInterval();
+			
+        </script>
+    </body>
+</html>

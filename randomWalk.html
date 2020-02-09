@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Random walk</title>
+        <!-- <script type="text/javascript" src="../d3.js"></script> -->
+		<script src="https://d3js.org/d3.v5.min.js"></script>
+    </head>
+    <body>
+	<button id="pause">Pause/Resume</button>
+	<button id="clear">Clear</button>
+        <script type="text/javascript">
+            // Your beautiful D3 code will go here
+			var w = 1000;
+			var h = 1000;
+			var padding = 50;
+			var max = 50;
+			var startLine = [200, 200, 400, 300];
+			var pause = false;
+			var getRandomNumber = function(x){
+				var multiplier;
+				var y = Math.random();
+				if(y > .5){
+					multiplier = 1
+				} else{
+					multiplier = -1
+				}
+				var rand = Math.random();
+				var returnValue = Math.floor(rand * x) * multiplier;	
+				return returnValue;
+			};
+
+			var getNextPoints = function(){
+				var newLine = [];
+				newLine.push(startLine[2]);
+				newLine.push(startLine[3]);
+				var x2_new = startLine[2];
+				var x2_step = getRandomNumber(max);
+				if((x2_new + x2_step) > (w - padding)){
+					x2_new -= x2step;
+				} else if ((x2_new + x2_step) < padding){
+					x2_new += (x2_step * -1);
+				} else {
+					x2_new += x2_step;
+				}	
+				newLine.push(x2_new);			
+				var y2_new = startLine[3];
+				var y2_step = getRandomNumber(max);
+				if((y2_new + y2_step) > (h - padding)){
+					y2_new -= y2step;
+				} else if ((y2_new + y2_step) < padding){
+					y2_new += (y2_step * -1);
+				} else {
+					y2_new += y2_step;
+				}
+				y2_new += y2_step;
+				newLine.push(y2_new);
+				startLine = newLine;
+			};
+			
+			var svg = d3.select("body")
+				.append("svg")
+				.attr('width', w)
+				.attr('height', h);
+				
+			var check = function(){
+				console.log(pause);
+				return pause;
+			}
+				
+			var createLine = function(){
+				var suspend = check();
+				if(suspend == false){
+					getNextPoints();
+					svg.append('line')
+						.attr('class', 'line')
+						.attr('x1', startLine[0])
+						.attr('y1', startLine[1])
+						.attr('x2', startLine[2])
+						.attr('y2',startLine[3])
+						.attr('stroke', 'black');
+				}				
+			};
+			
+			var walker;
+			var startInterval = function(){
+				if(pause == false){
+					walker = setInterval(createLine, 100);
+				} else{
+					
+				}
+			};		
+			startInterval();
+			
+			d3.select('#pause')
+				.on('click', function(d) {
+					if(pause == false){
+						clearInterval(walker);
+						pause = true;
+					} else {
+						pause = false;
+						startInterval();
+					}	
+				});
+				
+			d3.select('#clear')
+				.on('click', function(d) {
+					clearInterval(walker);
+					pause = false;
+					d3.selectAll(".line")
+						.remove();					
+					startInterval();
+				});
+        </script>
+    </body>
+</html>
