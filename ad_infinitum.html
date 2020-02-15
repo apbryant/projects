@@ -1,0 +1,70 @@
+<html>
+	<head>
+		<style>
+			#textDiv{
+				position: absolute;
+			}
+		</style>
+		<script src="jquery-3.4.1.js"></script>
+	</head>
+	<body>
+		<div id="textDiv">
+			<p class="line">
+				0 LOAD_CONST
+			</p>
+			<p class="line">
+				3 STORE_FAST 
+			</p>
+			<p class="line">
+				6 SETUP_LOOP 
+			</p>
+			<p class="line">
+				9 LOAD_FAST 
+			</p>
+			<p class="line">
+				12 LOAD_CONST 
+			</p>
+			<p class="line">
+				15 COMPARE_OP 
+			</p>
+			<p class="line">
+				18 POP_JUMP_IF_F 
+			</p>
+			<p class="line">
+				21 LOAD_GLOBAL
+			</p>
+			<p class="line">
+				24 LOAD_CONST  
+			</p>
+			<p class="line">
+				27 CALL_FUNCTION 
+			</p>
+			<p class="line">
+				30 POP_TOP 
+			</p>
+			<p class="line">
+				31 JUMP_ABSOLUTE 
+			</p>
+			<p class="line">
+				34 POP_BLOCK 
+			</p>
+			<p class="line">
+				35 LOAD_CONST
+			</p>
+			<p class="line">
+				38 RETURN_VALUE 
+			</p>
+		</div>
+		<script>
+			 $(document).ready(function(){
+			 	function loop() {
+			         $('#textDiv').css('top','150%');
+			         $('#textDiv').animate (
+			             {'top': '-150%'}
+			         , 10000, 'linear',loop);
+			     }
+			     loop();
+			 });
+		</script>
+	</body>
+</html>
