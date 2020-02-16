@@ -1,0 +1,61 @@
+<html>
+	<head>
+		<style>
+			.instructions{
+				position: absolute;
+				font-family: sans-serif;
+				font-size: 20px;
+				vertical-align: middle;
+			}
+		</style>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	</head>
+	<body>
+		<script>
+			var arr = [
+				"0 LOAD_CONST",
+				"3 STORE_FAST ",
+				"6 SETUP_LOOP",
+				"9 LOAD_FAST ",
+				"12 LOAD_CONST",
+				"15 COMPARE_OP",
+				"18 POP_JUMP_IF_F",
+				"21 LOAD_GLOBAL",
+				"24 LOAD_CONST",
+				"27 CALL_FUNCTION",
+				"30 POP_TOP",
+				"31 JUMP_ABSOLUTE",
+				"34 POP_BLOCK",
+				"35 LOAD_CONST",
+				"38 RETURN_VALUE"
+			]
+			var i = 0;
+			var j = 0;
+			var stop = false;
+			var loop = function() {
+		 		var id = "instruction"+j;
+		 		var hashtagId='#'+id;
+		 		var instruction = $("<p></p>").text(arr[i]).attr('id',id);	 		
+		 		$("body").append(instruction);
+		 		$(instruction).addClass("instructions");
+		         $(instruction).css('top','150%');
+		         $(instruction).css('left', function(){
+		         	var obj = document.getElementById(id).getBoundingClientRect();
+		         	var width = obj.width;
+		         	var left = screen.width / 2 - width / 2;
+		         	return left + "px";
+		         });
+		         $(instruction).animate (
+		             {'top': '-150%'}
+		         , { duration: 15000, queue: false }, 'linear', loop);
+		         if(i==arr.length - 1){
+		         	i = 0;
+		         }else{
+		         	i++;
+		         }
+		         j++;
+		     }
+	 		setInterval(function(){loop()}, 500);
+		</script>
+	</body>
+</html>
